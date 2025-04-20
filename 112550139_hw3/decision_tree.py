@@ -46,7 +46,7 @@ class DecisionTree:
         self.tree = self._build_tree(X, y)
         self.progress.close()
 
-    def _build_tree(self, X: np.ndarray, y: np.ndarray, depth: int):
+    def _build_tree(self, X: np.ndarray, y: np.ndarray, depth: int = 0):
         # (TODO) Grow the decision tree and return it
         num_samples, nums_features = X.shape
         num_classes = len(np.unique(y))

@@ -49,7 +49,7 @@ class TestDataset(Dataset):
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         return image, base_name
     
-def load_train_dataset(path: str='data/train/')->Tuple[List, List]:
+def load_train_dataset(path: str='/home/jerrychin/NYCU/2025-IntroToAI/112550139_hw3/data/train')->Tuple[List, List]:
     # (TODO) Load training dataset from the given path, return images and labels
     label_map = {"elephant": 0, "jaguar": 1, "lion": 2, "parrot": 3, "penguin": 4}
     images = []
@@ -68,7 +68,7 @@ def load_train_dataset(path: str='data/train/')->Tuple[List, List]:
     # raise NotImplementedError
     return images, labels
 
-def load_test_dataset(path: str='data/test/')->List:
+def load_test_dataset(path: str='/home/jerrychin/NYCU/2025-IntroToAI/112550139_hw3/data/test')->List:
     # (TODO) Load testing dataset from the given path, return images
     images = []
     

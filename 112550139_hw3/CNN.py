@@ -7,7 +7,7 @@ from typing import Tuple
 import pandas as pd
 
 class CNN(nn.Module):
-    def __init__(self, num_classes=5):
+    def __init__(self, num_classes: int = 5):
         # (TODO) Design your CNN, it can only be less than 3 convolution layers
         super(CNN, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)

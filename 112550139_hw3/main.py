@@ -22,6 +22,7 @@ def main():
     load data
     """
     logger.info("Start loading data")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     images, labels = load_train_dataset()
     images, labels = shuffle(images, labels, random_state=777)
     train_len = int(0.8 * len(images))
@@ -53,6 +54,7 @@ def main():
     max_acc = 0
 
     EPOCHS = 10
+    # EPOCHS = 1 # for debug
     for epoch in range(EPOCHS): #epoch
         train_loss = train(model, train_loader, criterion, optimizer, device)
         val_loss, val_acc = validate(model, val_loader, criterion, device)
@@ -73,13 +75,13 @@ def main():
     """
     CNN - plot
     """
-    plot()
+    plot(train_losses, val_losses)
 
     """
     CNN - test
     """
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    test()
+    test(model, test_loader, criterion, device)
 
     """
     Decision Tree - grow tree and validate
@@ -111,7 +113,7 @@ def main():
     test_predictions = tree_model.predict(test_features)
 
     results = []
-    for image_name, prediction in zip(test_paths, test_predictions.cpu().numpy()):
+    for image_name, prediction in zip(test_paths, test_predictions):
         results.append({'id': image_name, 'prediction': prediction})
     df = pd.DataFrame(results)
     df.to_csv('DecisionTree.csv', index=False)
