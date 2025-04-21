@@ -10,6 +10,10 @@ class TrainDataset(Dataset):
         self.transform = transforms.Compose([
             transforms.Grayscale(num_output_channels=3),
             transforms.Resize((224, 224)),
+            # Reduce overfitting by data augmentation
+            transforms.RandomHorizontalFlip(p=0.5),   # ← random flip for data augmentation
+            transforms.RandomRotation(15),            # ← small rotation for data augmentation
+            # End of data augmentation
             transforms.ToTensor()
         ])
         self.images, self.labels = images, labels

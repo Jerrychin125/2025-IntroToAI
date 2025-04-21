@@ -14,6 +14,7 @@ class CNN(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
         self.fc1 = nn.Linear(64 * 56 * 56, 256)
+        self.drop  = nn.Dropout(p=0.3) # ← added Dropout layer for reducing overfitting
         self.fc2 = nn.Linear(256, num_classes)
         # raise NotImplementedError
 
@@ -23,12 +24,13 @@ class CNN(nn.Module):
         x = self.pool(F.relu(self.conv2(x)))
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
+        x = self.drop(x) # ← added Dropout layer for reducing overfitting
         x = self.fc2(x)
         # raise NotImplementedError
         return x
 
-def _model_loop(model, loader, criterion, device, optimiser=None):
-    is_train = optimiser is not None
+def _model_loop(model, loader, criterion, device, optimizer=None):
+    is_train = optimizer is not None
     mode = "train" if is_train else "eval"
     if is_train:
         model.train()
@@ -44,9 +46,9 @@ def _model_loop(model, loader, criterion, device, optimiser=None):
             outputs = model(inputs)
             loss = criterion(outputs, targets)
             if is_train:
-                optimiser.zero_grad()
+                optimizer.zero_grad()
                 loss.backward()
-                optimiser.step()
+                optimizer.step()
             running_loss += loss.item() * inputs.size(0)
             _, preds = torch.max(outputs, 1)
             correct += (preds == targets).sum().item()
@@ -58,7 +60,7 @@ def _model_loop(model, loader, criterion, device, optimiser=None):
 
 def train(model: CNN, train_loader: DataLoader, criterion, optimizer, device)->float:
     # (TODO) Train the model and return the average loss of the data, we suggest use tqdm to know the progress
-    avg_loss, _ = _model_loop(model, train_loader, criterion, device, optimiser=optimizer)
+    avg_loss, _ = _model_loop(model, train_loader, criterion, device, optimizer=optimizer)
     # raise NotImplementedError
     return avg_loss
 
