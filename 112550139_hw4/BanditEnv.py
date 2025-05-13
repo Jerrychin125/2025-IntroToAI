@@ -10,25 +10,29 @@ class BanditEnv:
     def __init__(self, k: int, stationary: bool = True,
                  walk_std: float = 0.01, seed: int | None = None):
         assert k > 0, "k must be positive"
-        self.k = k
+        self.k = k       
         self.stationary = stationary
+        # Standard deviation of random walk for non-stationary case
+        # μ ~ N(0, 0.01²) in this case
         self.walk_std = walk_std
         self.random_state = np.random.RandomState(seed)
-        self._init_arms()
+        self.actions = []
+        self.rewards = []
         self.reset()
 
     # ---------- public  ----------
     def reset(self) -> None:
-        """清空歷史並重新抽 reward distribution 的均值。"""
-        self._init_arms()
-        self.actions, self.rewards = [], []
+        # μ ~ N(0, 1²)
+        self.mu = self.random_state.normal(loc=0.0, scale=1.0, size=self.k)
+        self.actions.clear()
+        self.rewards.clear()
 
     def step(self, action: int) -> float:
-        """拉動指定 arm; 回傳 reward。"""
         if not (0 <= action < self.k):
             raise IndexError("action out of range")
-        # 非定常環境：先讓所有 μ 作隨機漫步
+        # Non-stationary: μ random walk
         if not self.stationary:
+            # μ ← μ + N(0, 0.01²)
             self.mu += self.random_state.normal(
                 loc=0.0, scale=self.walk_std, size=self.k)
         reward = self.random_state.normal(loc=self.mu[action], scale=1.0)
@@ -39,6 +43,3 @@ class BanditEnv:
     def export_history(self):
         return list(self.actions), list(self.rewards)
 
-    # ---------- private ----------
-    def _init_arms(self):
-        self.mu = self.random_state.normal(loc=0.0, scale=1.0, size=self.k)
